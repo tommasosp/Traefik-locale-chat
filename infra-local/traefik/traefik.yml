@@ -1,0 +1,18 @@
+# Traefik static — ingress target `chat_local_ingress` (TLS file mkcert, vedi Club `traefik-local/`).
+# Dynamic: directory `dynamic/` (file provider, watch).
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+api:
+  dashboard: false
+
+log:
+  level: INFO

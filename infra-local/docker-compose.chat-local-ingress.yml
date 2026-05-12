@@ -1,0 +1,37 @@
+# Ingress TLS unificato locale — **unico ingresso HTTPS ufficiale** del workspace (progetto `chat_local_ingress`).
+#
+# Prerequisiti: rete `chat_edge` → `bash Traefik-locale-chat/scripts/docker-networks-preflight.sh local` da root monorepo `Chat/` (cwd `Traefik-locale-chat/`: `bash scripts/docker-networks-preflight.sh local`).
+#
+# Certificati: directory **`./certs/`** (persistente nel repo → `infra-local/certs/`) con `cert.pem` e `cert-key.pem`
+# generate via mkcert — vedi `certs/README.md`. Nessun export `MKCERT_CERT_DIR` richiesto.
+#
+# Avvio (directory `Traefik-locale-chat/infra-local/`):
+#   docker compose -f docker-compose.chat-local-ingress.yml up -d
+#
+# Regola: **solo questo** Traefik deve bindare la **443** sul host in uso normale. Spegnere Traefik legacy Club (`club_traefik_local`)
+# e ogni altro Traefik locale che pubblichi **443** prima di `up` (fallback legacy solo debug: vedi `../docs/docker_networks_runtime.md` §5).
+#
+# Nessun extra_hosts verso host.docker.internal: gli upstream nella dynamic puntano solo ad alias Docker su `chat_edge`
+# (Fase 4). Eventuali bisogni dell'host sono documentati fuori dal Traefik target in `../docs/docker_networks_runtime.md`.
+name: chat_local_ingress
+
+services:
+  traefik:
+    image: traefik:v3.6.13
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+    ports:
+      # Ufficiale: **443** host → TLS verso gli host `.loc` senza porta in URL (`../docs/docker_networks_runtime.md`).
+      # Eccezione solo se la 443 è occupata durante debug: `export TRAEFIK_HOST_HTTPS=<porta_libera>` (non è il flusso standard).
+      - "${TRAEFIK_HOST_HTTPS:-443}:443"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./certs:/certs:ro
+    networks:
+      - chat_edge
+
+networks:
+  chat_edge:
+    external: true
+    name: chat_edge

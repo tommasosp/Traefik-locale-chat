@@ -1,0 +1,19 @@
+# Overlay: attacca `app` SuperAdmin alla rete `chat_edge` con alias `superadminappchat`
+# (stesso nome usato dai compose legacy su `rete_per_instradamento`).
+#
+# Merge (da root clone `SuperAdmin-App-per-RealTimeChat/`):
+#   docker compose --env-file docker/.env --env-file env/.env \
+#     -f docker/docker-compose.yml -f docker-compose.dev.yml \
+#     -f ../Traefik-locale-chat/infra-local/docker-compose.superadmin-chat-edge.attach.yml config
+services:
+  app:
+    networks:
+      rete_superadmin_app_chat: {}
+      chat_edge:
+        aliases:
+          - superadminappchat
+
+networks:
+  chat_edge:
+    external: true
+    name: chat_edge

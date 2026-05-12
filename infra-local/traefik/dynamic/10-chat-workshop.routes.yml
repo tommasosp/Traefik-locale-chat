@@ -1,0 +1,107 @@
+# Host locali piano: Club, Phoenix, MinIO API :9000, rtc-media-node :4443.
+# Upstream su `chat_edge` via alias (overlay `docker-compose.*-chat-edge.attach.yml`).
+http:
+  middlewares:
+    redirect-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    club-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "clubdeipresidenti.loc"
+    phoenix-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "phoenix.clubdeipresidenti.loc"
+    s3-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "s3.clubdeipresidenti.loc"
+    rtc-media-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+          X-Forwarded-Host: "media.clubdeipresidenti.loc"
+
+  routers:
+    club-http:
+      rule: Host(`clubdeipresidenti.loc`)
+      entryPoints: [web]
+      middlewares: [redirect-https]
+      service: noop@internal
+
+    phoenix-http:
+      rule: Host(`phoenix.clubdeipresidenti.loc`)
+      entryPoints: [web]
+      middlewares: [redirect-https]
+      service: noop@internal
+
+    s3-http:
+      rule: Host(`s3.clubdeipresidenti.loc`)
+      entryPoints: [web]
+      middlewares: [redirect-https]
+      service: noop@internal
+
+    rtc-media-http:
+      rule: Host(`media.clubdeipresidenti.loc`)
+      entryPoints: [web]
+      middlewares: [redirect-https]
+      service: noop@internal
+
+    club-https:
+      rule: Host(`clubdeipresidenti.loc`)
+      entryPoints: [websecure]
+      middlewares: [club-forwarded]
+      service: club-svc
+      tls: {}
+
+    phoenix-https:
+      rule: Host(`phoenix.clubdeipresidenti.loc`)
+      entryPoints: [websecure]
+      middlewares: [phoenix-forwarded]
+      service: phoenix-svc
+      tls: {}
+
+    s3-https:
+      rule: Host(`s3.clubdeipresidenti.loc`)
+      entryPoints: [websecure]
+      middlewares: [s3-forwarded]
+      service: minio-api-svc
+      tls: {}
+
+    rtc-media-https:
+      rule: Host(`media.clubdeipresidenti.loc`)
+      entryPoints: [websecure]
+      middlewares: [rtc-media-forwarded]
+      service: rtc-media-svc
+      tls: {}
+
+  services:
+    club-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://club_app:8000"
+
+    phoenix-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://rtc_backend:4000"
+
+    # Solo API S3 (container :9000), non la console UI :9001
+    minio-api-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://minio:9000"
+
+    rtc-media-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://rtc_media:4443"

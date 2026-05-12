@@ -1,0 +1,28 @@
+# SuperAdmin — stesso host `superadminappchat.local` del file provider legacy.
+# Upstream: alias `superadminappchat` sulla rete `chat_edge` (overlay SuperAdmin).
+http:
+  middlewares:
+    superadmin-app-chat-redirect-https:
+      redirectScheme:
+        scheme: https
+        port: 443
+        permanent: true
+  routers:
+    superadmin-app-chat-local-router-http:
+      rule: Host(`superadminappchat.local`)
+      service: superadmin-app-chat-local-service
+      entryPoints:
+        - web
+      middlewares:
+        - superadmin-app-chat-redirect-https
+    superadmin-app-chat-local-router-https:
+      rule: Host(`superadminappchat.local`)
+      service: superadmin-app-chat-local-service
+      entryPoints:
+        - websecure
+      tls: {}
+  services:
+    superadmin-app-chat-local-service:
+      loadBalancer:
+        servers:
+          - url: http://superadminappchat:8000

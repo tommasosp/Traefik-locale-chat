@@ -1,0 +1,16 @@
+# Overlay: attacca `app` del Club alla rete `chat_edge` con alias `club_app`.
+# Merge (da `club_dei_presidenti/docker/`):
+#   docker compose -f docker-compose.local.yml -f ../../Traefik-locale-chat/infra-local/docker-compose.club-chat-edge.attach.yml config
+#   docker compose -f docker-compose.local.yml -f ../../Traefik-locale-chat/infra-local/docker-compose.club-chat-edge.attach.yml up -d
+services:
+  app:
+    networks:
+      club: {}
+      chat_edge:
+        aliases:
+          - club_app
+
+networks:
+  chat_edge:
+    external: true
+    name: chat_edge

@@ -1,0 +1,2 @@
+# Materiale TLS locale (mkcert): non committare chiavi né certificati.
+*.pem

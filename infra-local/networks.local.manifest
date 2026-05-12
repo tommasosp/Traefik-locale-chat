@@ -1,0 +1,9 @@
+# Reti che il preflight locale può creare se assenti.
+# Sintassi per riga: NOME oppure NOME DRIVER (driver predefinito: bridge).
+# Righe vuote e righe che iniziano con # sono ignorate.
+#
+# Rete legacy edge (SuperAdmin locale, compose prod-like): NON è in questo elenco.
+# Crearla solo se serve esplicitamente:
+#   bash scripts/docker-networks-preflight.sh local --with-legacy-edge
+
+chat_edge

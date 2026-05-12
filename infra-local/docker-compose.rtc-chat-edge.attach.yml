@@ -1,0 +1,32 @@
+# Overlay: `backend` (Phoenix), `minio`, `rtc-media-node` su `chat_edge` con alias stabili.
+# `minio` resta raggiungibile come hostname servizio Docker `minio` anche su chat_edge.
+#
+# Merge dry-run (da `RealTimeChat/`, richiede MKCERT_CAROOT per il merge con dev):
+#   export MKCERT_CAROOT=/percorso/ca
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.dev.yml \
+#     -f infra/docker-compose.rtc-dev.yml \
+#     -f ../Traefik-locale-chat/infra-local/docker-compose.rtc-chat-edge.attach.yml config
+services:
+  backend:
+    networks:
+      rete_chat: {}
+      chat_edge:
+        aliases:
+          - rtc_backend
+
+  minio:
+    networks:
+      rete_chat: {}
+      chat_edge: {}
+
+  rtc-media-node:
+    networks:
+      rete_chat: {}
+      chat_edge:
+        aliases:
+          - rtc_media
+
+networks:
+  chat_edge:
+    external: true
+    name: chat_edge
