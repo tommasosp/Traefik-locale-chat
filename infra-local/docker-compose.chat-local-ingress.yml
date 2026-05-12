@@ -5,7 +5,10 @@
 # Certificati: directory **`./certs/`** (persistente nel repo → `infra-local/certs/`) con `cert.pem` e `cert-key.pem`
 # generate via mkcert — vedi `certs/README.md`. Nessun export `MKCERT_CERT_DIR` richiesto.
 #
-# Avvio (directory `Traefik-locale-chat/infra-local/`):
+# Avvio solo ingress (preflight reti `chat_edge` incluso):
+#   bash Traefik-locale-chat/scripts/traefik-chat-locale-up.sh
+#   bash Traefik-locale-chat/scripts/traefik-chat-locale-up.sh --build
+# Manuale (directory `Traefik-locale-chat/infra-local/`):
 #   docker compose -f docker-compose.chat-local-ingress.yml up -d
 #
 # Regola: **solo questo** Traefik deve bindare la **443** sul host in uso normale. Spegnere Traefik legacy Club (`club_traefik_local`)

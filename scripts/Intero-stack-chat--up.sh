@@ -6,8 +6,8 @@
 # RealTimeChat/infra/scripts/rebuild_rtc_media_node_dev.sh (MKCERT + MEDIASOUP).
 #
 # Uso — monorepo con `Chat/` che contiene `Traefik-locale-chat/`, `club_dei_presidenti/`, `RealTimeChat/`:
-#   bash Traefik-locale-chat/scripts/workshop-chat-local-up.sh
-#   bash Traefik-locale-chat/scripts/workshop-chat-local-up.sh --build
+#   bash Traefik-locale-chat/scripts/Intero-stack-chat--up.sh
+#   bash Traefik-locale-chat/scripts/Intero-stack-chat--up.sh --build
 #
 # Prerequisiti: Docker, mkcert, file TLS in infra-local/certs/; Club: club_dei_presidenti/docker/.env.docker
 # (copia da .env.docker.example). RealTimeChat: .env come da RealTimeChat/infra/README.md.
@@ -33,12 +33,12 @@ readonly CERT_KEY="${INFRA_LOCAL}/certs/cert-key.pem"
 TRAEFIK_PORT="${TRAEFIK_HOST_HTTPS:-443}"
 
 die() {
-  printf '[workshop-chat-local-up] %s\n' "$*" >&2
+  printf '[Intero-stack-chat--up] %s\n' "$*" >&2
   exit 1
 }
 
 info() {
-  printf '[workshop-chat-local-up] %s\n' "$*"
+  printf '[Intero-stack-chat--up] %s\n' "$*"
 }
 
 ensure_network() {
@@ -63,7 +63,7 @@ case "${1:-}" in
     BUILD_ARGS=(--build)
     ;;
   *)
-    die "argomento non riconosciuto: $1 (uso: bash Traefik-locale-chat/scripts/workshop-chat-local-up.sh [--build])"
+    die "argomento non riconosciuto: $1 (uso: bash Traefik-locale-chat/scripts/Intero-stack-chat--up.sh [--build])"
     ;;
 esac
 
@@ -177,6 +177,10 @@ code_media=$(curl -sk --max-time 15 --resolve "media.clubdeipresidenti.loc:${TRA
 info "codici HTTP: club=${code_club} phoenix=${code_phoenix} s3=${code_s3} media=${code_media}"
 
 if [[ "$code_club" != "405" && "$code_club" != "200" ]]; then
+  if [[ "$code_club" == "502" ]]; then
+    info "Club GET / → 502 — diagnosi upstream obbligatoria"
+    bash "${WORKSPACE_ROOT}/club_dei_presidenti/docker/diagnose-club-https-upstream.sh" || true
+  fi
   die "Club smoke upstream (GET /): atteso 405 o 200 (non è health applicativa), ottenuto ${code_club}"
 fi
 [[ "$code_phoenix" == "200" ]] || die "Phoenix GET /api/public-config: atteso 200, ottenuto ${code_phoenix}"
