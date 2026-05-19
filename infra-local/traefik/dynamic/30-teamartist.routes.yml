@@ -16,7 +16,6 @@ http:
       rule: >-
         Host(`teamartist.local`) || Host(`local.teamartist.org`) ||
         Host(`demo.teamartist.local`) || Host(`accounting.teamartist.local`) ||
-        Host(`testlogin.sportbay.org`) || Host(`login.teamartist.local`) ||
         Host(`wpui.teamartist.local`) || Host(`wpui.wpdevel.loc`) ||
         Host(`wpdevel.loc`) || Host(`www.wpdevel.loc`) ||
         Host(`pei.teamartist.local`) || Host(`profeta.teamartist.local`) ||
@@ -33,7 +32,6 @@ http:
       rule: >-
         Host(`teamartist.local`) || Host(`local.teamartist.org`) ||
         Host(`demo.teamartist.local`) || Host(`accounting.teamartist.local`) ||
-        Host(`testlogin.sportbay.org`) || Host(`login.teamartist.local`) ||
         Host(`wpui.teamartist.local`) || Host(`wpui.wpdevel.loc`) ||
         Host(`wpdevel.loc`) || Host(`www.wpdevel.loc`) ||
         Host(`pei.teamartist.local`) || Host(`profeta.teamartist.local`) ||
