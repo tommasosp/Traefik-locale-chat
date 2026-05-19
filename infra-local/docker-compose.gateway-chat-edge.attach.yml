@@ -1,0 +1,18 @@
+# Overlay: attacca ta_dev_gateway alla rete chat_edge (alias teamartist_gateway).
+# Merge (da ta-devops/docker/gateway/):
+#   docker compose \
+#     -f docker-compose.yml \
+#     -f ../../../traefik-locale-chat/infra-local/docker-compose.gateway-chat-edge.attach.yml \
+#     up -d
+services:
+  dev-gateway:
+    networks:
+      teamartist_dev: {}
+      chat_edge:
+        aliases:
+          - teamartist_gateway
+
+networks:
+  chat_edge:
+    external: true
+    name: chat_edge

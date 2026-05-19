@@ -1,0 +1,55 @@
+# TeamArtist stack locale: TLS :443 → ta_dev_gateway :80 (nginx path-based routing invariato).
+# Richiede overlay docker-compose.gateway-chat-edge.attach.yml su dev-gateway.
+http:
+  middlewares:
+    teamartist-redirect-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    teamartist-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+
+  routers:
+    teamartist-http:
+      rule: >-
+        Host(`teamartist.local`) || Host(`local.teamartist.org`) ||
+        Host(`demo.teamartist.local`) || Host(`accounting.teamartist.local`) ||
+        Host(`testlogin.sportbay.org`) || Host(`login.teamartist.local`) ||
+        Host(`wpui.teamartist.local`) || Host(`wpui.wpdevel.loc`) ||
+        Host(`wpdevel.loc`) || Host(`www.wpdevel.loc`) ||
+        Host(`pei.teamartist.local`) || Host(`profeta.teamartist.local`) ||
+        Host(`profeta.sportbay.local`) || Host(`mm.teamartist.local`) ||
+        Host(`cdn.sportbay.local`) || Host(`cdn0.sportbay.local`) ||
+        Host(`cdn1.sportbay.local`) || Host(`cdn2.sportbay.local`) ||
+        Host(`cdn3.sportbay.local`) ||
+        HostRegexp(`^[a-z0-9-]+\\.wpdevel\\.loc$`)
+      entryPoints: [web]
+      middlewares: [teamartist-redirect-https]
+      service: noop@internal
+
+    teamartist-https:
+      rule: >-
+        Host(`teamartist.local`) || Host(`local.teamartist.org`) ||
+        Host(`demo.teamartist.local`) || Host(`accounting.teamartist.local`) ||
+        Host(`testlogin.sportbay.org`) || Host(`login.teamartist.local`) ||
+        Host(`wpui.teamartist.local`) || Host(`wpui.wpdevel.loc`) ||
+        Host(`wpdevel.loc`) || Host(`www.wpdevel.loc`) ||
+        Host(`pei.teamartist.local`) || Host(`profeta.teamartist.local`) ||
+        Host(`profeta.sportbay.local`) || Host(`mm.teamartist.local`) ||
+        Host(`cdn.sportbay.local`) || Host(`cdn0.sportbay.local`) ||
+        Host(`cdn1.sportbay.local`) || Host(`cdn2.sportbay.local`) ||
+        Host(`cdn3.sportbay.local`) ||
+        HostRegexp(`^[a-z0-9-]+\\.wpdevel\\.loc$`)
+      entryPoints: [websecure]
+      middlewares: [teamartist-forwarded]
+      service: teamartist-gateway-svc
+      tls: {}
+
+  services:
+    teamartist-gateway-svc:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://teamartist_gateway:80"
