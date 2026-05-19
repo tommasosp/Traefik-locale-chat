@@ -23,7 +23,7 @@ http:
         Host(`cdn.sportbay.local`) || Host(`cdn0.sportbay.local`) ||
         Host(`cdn1.sportbay.local`) || Host(`cdn2.sportbay.local`) ||
         Host(`cdn3.sportbay.local`) ||
-        HostRegexp(`^[a-z0-9-]+\\.wpdevel\\.loc$`)
+        HostRegexp(`^[a-z0-9-]+\.wpdevel\.loc$`)
       entryPoints: [web]
       middlewares: [teamartist-redirect-https]
       service: noop@internal
@@ -39,7 +39,7 @@ http:
         Host(`cdn.sportbay.local`) || Host(`cdn0.sportbay.local`) ||
         Host(`cdn1.sportbay.local`) || Host(`cdn2.sportbay.local`) ||
         Host(`cdn3.sportbay.local`) ||
-        HostRegexp(`^[a-z0-9-]+\\.wpdevel\\.loc$`)
+        HostRegexp(`^[a-z0-9-]+\.wpdevel\.loc$`)
       entryPoints: [websecure]
       middlewares: [teamartist-forwarded]
       service: teamartist-gateway-svc
